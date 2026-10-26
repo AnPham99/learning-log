@@ -1,0 +1,21 @@
+{% extends "app_base.html" %}
+{% block title %}Xác nhận xóa — Learning Log{% endblock %}
+{% block content %}
+  <div class="page-heading"><h1>{% if entry %}Xóa ghi chép?{% else %}Xóa chủ đề?{% endif %}</h1></div>
+  <form method="post" class="editor-panel">
+    {% csrf_token %}
+    {% if entry %}
+      <p>Ghi chép trong chủ đề <strong>{{ topic.text }}</strong> sẽ bị xóa vĩnh viễn.</p>
+      <p class="delete-preview">{{ entry.text|truncatechars:300 }}</p>
+    {% else %}
+      <p>Chủ đề <strong>{{ topic.text }}</strong> và <strong>{{ entry_count }} ghi chép</strong> bên trong sẽ bị xóa vĩnh viễn.</p>
+    {% endif %}
+    <p>Thao tác này không thể hoàn tác.</p>
+    <div class="form-actions">
+      <a class="button button-secondary"
+         href="{% url 'journal:topic_detail' topic.pk %}">Hủy</a>
+      <button class="button button-danger"
+              type="submit">{% if entry %}Xóa ghi chép{% else %}Xóa chủ đề{% endif %}</button>
+    </div>
+  </form>
+{% endblock %}

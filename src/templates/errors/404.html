@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Không tìm thấy — Learning Log{% endblock %}
+{% block layout %}
+  <main id="main" class="error-page">
+    {% include "components/brand.html" %}
+    <span class="error-number">404</span>
+    <h1>Không tìm thấy trang này.</h1>
+    <p>Nội dung không tồn tại hoặc không thuộc tài khoản của bạn.</p>
+    <a class="button" href="{% url 'home' %}">
+    {% include "components/icon.html" with name="back" %} Về trang chủ</a>
+  </main>
+{% endblock %}

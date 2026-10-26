@@ -1,0 +1,77 @@
+{% extends "app_base.html" %}
+{% block title %}Chủ đề của bạn — Learning Log{% endblock %}
+{% block content %}
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">HỌC HỎI • GHI CHÉP • TRƯỞNG THÀNH</p>
+      <h1>Không gian học tập</h1>
+      <p>Chào {{ user.username }}. Hôm nay bạn muốn tìm hiểu điều gì?</p>
+    </div>
+    <a class="button" href="{% url 'journal:topic_create' %}">
+    {% include "components/icon.html" with name="plus" %} Tạo chủ đề</a>
+  </div>
+  <section class="stats-row" aria-label="Tổng quan nhật ký">
+    <div class="stat">
+      <span class="stat-icon">{% include "components/icon.html" with name="book" %}</span>
+      <div>
+        <strong>{{ summary.topic_count }}</strong>
+        <span>Chủ đề đang học</span>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat-icon">{% include "components/icon.html" with name="note" %}</span>
+      <div>
+        <strong>{{ summary.entry_count }}</strong>
+        <span>Ghi chép đã lưu</span>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat-icon">{% include "components/icon.html" with name="calendar" %}</span>
+      <div>
+        <strong class="stat-date">
+          {% if summary.last_entry_at %}{{ summary.last_entry_at|date:'d/m/Y' }}{% else %}Chưa có{% endif %}
+        </strong>
+        <span>Ghi chép gần nhất</span>
+      </div>
+    </div>
+  </section>
+  {% include "journal/components/search_form.html" with search_label="Tìm theo tên chủ đề hoặc nội dung ghi chép" %}
+  <div class="section-heading">
+    <h2>
+      Chủ đề của bạn <span class="count-badge">{{ topics|length }}</span>
+    </h2>
+    <span>Mới tạo gần đây</span>
+  </div>
+  {% if topics %}
+    <div class="topic-grid">
+      {% for topic in topics %}
+        {% cycle 'sage' 'clay' 'sand' 'blue' as tone silent %}
+        {% include "journal/components/topic_card.html" %}
+      {% endfor %}
+    </div>
+  {% elif query %}
+    <section class="empty-state">
+      <h2>Không tìm thấy chủ đề phù hợp.</h2>
+      <p>Thử từ khóa khác hoặc bỏ bộ lọc.</p>
+    </section>
+  {% else %}
+    <section class="empty-state">
+      <span class="empty-symbol">{% include "components/icon.html" with name="book" %}</span>
+      <p class="eyebrow">MỌI HÀNH TRÌNH ĐỀU CÓ TRANG ĐẦU</p>
+      <h2>Bắt đầu từ một điều bạn tò mò.</h2>
+      <p>
+        Tạo một chủ đề để gom những điều bạn học.
+        <br>
+        Python, nhiếp ảnh hay bất cứ điều gì khiến bạn muốn tìm hiểu.
+      </p>
+      <a class="button" href="{% url 'journal:topic_create' %}">
+      {% include "components/icon.html" with name="plus" %} Tạo chủ đề đầu tiên</a>
+    </section>
+  {% endif %}
+  <div class="gentle-note">
+    {% include "components/icon.html" with name="spark" %}
+    <p>
+      Kiến thức không cần đến cùng một lúc. <strong>Cứ thêm một trang, mỗi ngày.</strong>
+    </p>
+  </div>
+{% endblock %}

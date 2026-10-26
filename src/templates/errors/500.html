@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Có lỗi xảy ra — Learning Log{% endblock %}
+{% block layout %}
+  <main id="main" class="error-page">
+    {% include "components/brand.html" %}
+    <span class="error-number">500</span>
+    <h1>Trang này chưa thể mở.</h1>
+    <p>Hãy thử lại sau một chút. Nếu bạn đang lưu ghi chép, kiểm tra lại nội dung trước khi gửi lần nữa.</p>
+    <a class="button" href="{% url 'home' %}">Về trang chủ</a>
+  </main>
+{% endblock %}

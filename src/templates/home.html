@@ -1,0 +1,70 @@
+{% extends "public_base.html" %}
+{% block title %}Learning Log — Ghi lại hôm nay, hiểu sâu ngày mai{% endblock %}
+{% block content %}
+  <section class="landing-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">
+        <span class="tiny-dot"></span> NHẬT KÝ HỌC TẬP CỦA BẠN
+      </p>
+      <h1>
+        Ghi lại hôm nay.
+        <br>
+        <em>Hiểu sâu ngày mai.</em>
+      </h1>
+      <p class="hero-description">
+        Những điều bạn học xứng đáng được nhớ.
+        <br>
+        Tạo chủ đề, ghi lại ý tưởng và nhìn lại hành trình của chính mình.
+      </p>
+      <a class="button button-large"
+         href="{% url 'accounts:register' %}">Tạo không gian của bạn {% include "components/icon.html" with name="arrow" %}
+      </a>
+      <p class="hero-footnote">
+      {% include "components/icon.html" with name="lock" %} Ghi chép riêng tư. Nhịp học của riêng bạn.</p>
+    </div>
+    <div class="journal-preview"
+         aria-label="Ví dụ minh họa một ghi chép học tập">
+      <div class="preview-cover">
+        <span class="preview-edition">LEARNING LOG / MỘT TRANG MỚI</span>
+        <span class="preview-book">{% include "components/icon.html" with name="book" %}</span>
+        <div>
+          Điều nhỏ hôm nay.
+          <br>
+          <em>Kiến thức lớn ngày mai.</em>
+        </div>
+        <span class="preview-rule"></span>
+        <span class="preview-volume">GHI CHÉP • SUY NGẪM • TIẾN BỘ</span>
+      </div>
+      <div class="preview-paper">
+        <div class="preview-paper-top">
+          LẬP TRÌNH PYTHON<span>01</span>
+        </div>
+        <h2>Hiểu hơn về một vòng lặp.</h2>
+        <p>Chia một bài toán lớn thành những bước nhỏ. Thử một ví dụ. Rồi tự giải thích lại bằng lời của mình.</p>
+        <div class="paper-lines">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span class="preview-caption">Một ghi chép minh họa</span>
+      </div>
+    </div>
+  </section>
+  <section class="landing-steps" aria-label="Cách sử dụng">
+    <div>
+      <span class="step-number">01 /</span>
+      <h2>Chọn điều muốn học</h2>
+      <p>Mỗi chủ đề là một góc kiến thức của bạn.</p>
+    </div>
+    <div>
+      <span class="step-number">02 /</span>
+      <h2>Viết điều vừa hiểu</h2>
+      <p>Một ý chính, một ví dụ, một khám phá mới.</p>
+    </div>
+    <div>
+      <span class="step-number">03 /</span>
+      <h2>Đọc lại để đi xa hơn</h2>
+      <p>Kiến thức được bồi đắp từ những ghi chép nhỏ.</p>
+    </div>
+  </section>
+{% endblock %}

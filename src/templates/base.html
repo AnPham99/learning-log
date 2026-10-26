@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+          content="Learning Log — không gian riêng để ghi lại những điều bạn học.">
+    <meta name="application-name" content="Learning Log">
+    <title>{% block title %}Learning Log{% endblock %}</title>
+    <link rel="icon"
+          href="{% static 'images/favicon.svg' %}"
+          type="image/svg+xml">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/journal.css' %}">
+    <script src="{% static 'js/app.js' %}" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Đi đến nội dung</a>
+    {% include "components/sprite.html" %}
+    {% block layout %}{% endblock %}
+  </body>
+</html>

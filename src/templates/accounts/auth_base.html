@@ -1,0 +1,25 @@
+{% extends "public_base.html" %}
+{% block content %}
+  <div class="auth-layout">
+    <aside class="auth-intro">
+      <p class="eyebrow">MỘT KHOẢNG RIÊNG CHO KIẾN THỨC</p>
+      <h1>
+        Học một điều.
+        <br>
+        <em>Giữ lại một điều.</em>
+      </h1>
+      <p>
+        Ghi lại những gì bạn đang tìm hiểu.
+        <br>
+        Để mỗi lần quay lại, bạn thấy mình đã đi xa hơn.
+      </p>
+      <div class="auth-art" aria-hidden="true">
+        <span class="art-book">{% include "components/icon.html" with name="book" %}</span>
+        <span class="art-note">{% include "components/icon.html" with name="pen" %}</span>
+      </div>
+    </aside>
+    <section class="auth-panel">
+      {% block auth_content %}{% endblock %}
+    </section>
+  </div>
+{% endblock %}

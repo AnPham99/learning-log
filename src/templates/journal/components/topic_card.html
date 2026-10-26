@@ -1,0 +1,14 @@
+<a class="topic-card tone-{{ tone }}"
+   href="{% url 'journal:topic_detail' topic.pk %}">
+  <div class="topic-card-top">
+    <span class="topic-glyph">{% include "components/icon.html" with name="book" %}</span>
+    <span class="topic-number">
+    {% if forloop.counter < 10 %}0{% endif %}{{ forloop.counter }}</span>
+  </div>
+  <h3>{{ topic.text }}</h3>
+  <p class="topic-created">Tạo ngày {{ topic.date_added|date:'d/m/Y' }}</p>
+  <div class="topic-card-bottom">
+    <span>{% include "components/icon.html" with name="note" %} {{ topic.entry_count }} ghi chép</span>
+    {% include "components/icon.html" with name="arrow" %}
+  </div>
+</a>

@@ -1,0 +1,45 @@
+{% extends "app_base.html" %}
+{% block title %}{{ topic.text }} — Learning Log{% endblock %}
+{% block breadcrumb %}Chủ đề{% endblock %}
+{% block content %}
+  <a class="back-link" href="{% url 'journal:topic_list' %}">
+  {% include "components/icon.html" with name="back" %} Tất cả chủ đề</a>
+  <div class="page-heading detail-heading">
+    <div>
+      <p class="eyebrow">CHỦ ĐỀ HỌC TẬP</p>
+      <h1>{{ topic.text }}</h1>
+      <p>Tạo ngày {{ topic.date_added|date:'d/m/Y' }} <span class="meta-dot">·</span> {{ entries|length }} ghi chép</p>
+    </div>
+    <div class="journal-actions">
+      <a class="button button-secondary danger-link"
+         href="{% url 'journal:topic_delete' topic.pk %}">Xóa chủ đề</a>
+      <a class="button" href="{% url 'journal:entry_create' topic.pk %}">
+      {% include "components/icon.html" with name="plus" %} Thêm ghi chép</a>
+    </div>
+  </div>
+  {% include "journal/components/search_form.html" with search_label="Tìm nội dung ghi chép trong chủ đề" %}
+  {% if entries %}
+    <div class="section-heading">
+      <h2>Những điều bạn đã học</h2>
+      <span>Mới nhất trước</span>
+    </div>
+    <div class="entry-list">
+      {% for entry in entries %}
+        {% include "journal/components/entry_card.html" %}
+      {% endfor %}
+    </div>
+  {% elif query %}
+    <section class="empty-state">
+      <h2>Không tìm thấy ghi chép phù hợp.</h2>
+      <p>Thử từ khóa khác hoặc bỏ bộ lọc.</p>
+    </section>
+  {% else %}
+    <section class="empty-state">
+      <span class="empty-symbol">{% include "components/icon.html" with name="pen" %}</span>
+      <h2>Một chủ đề mới. Một trang giấy mở.</h2>
+      <p>Bắt đầu với điều đầu tiên bạn học được về chủ đề này.</p>
+      <a class="button" href="{% url 'journal:entry_create' topic.pk %}">
+      {% include "components/icon.html" with name="plus" %} Viết ghi chép đầu tiên</a>
+    </section>
+  {% endif %}
+{% endblock %}

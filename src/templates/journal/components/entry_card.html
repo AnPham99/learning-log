@@ -1,0 +1,20 @@
+<article class="entry-card">
+  <div class="entry-date">
+    <span>{{ entry.date_added|date:'d' }}</span>
+    <span>THÁNG {{ entry.date_added|date:'m' }}</span>
+    <small>{{ entry.date_added|date:'Y' }}</small>
+  </div>
+  <div class="entry-body">
+    <div class="entry-toolbar">
+      <span class="entry-time">{{ entry.date_added|date:'H:i' }}{% if entry.updated_at|date:"U" != entry.date_added|date:"U" %} <span class="meta-dot">·</span> Đã chỉnh sửa{% endif %}
+      </span>
+      <div class="journal-actions">
+        <a class="text-button danger-link"
+           href="{% url 'journal:entry_delete' entry.pk %}">Xóa</a>
+        <a class="text-button" href="{% url 'journal:entry_edit' entry.pk %}">
+        {% include "components/icon.html" with name="pen" %} Chỉnh sửa</a>
+      </div>
+    </div>
+    <div class="entry-content">{{ entry.text|linebreaksbr }}</div>
+  </div>
+</article>

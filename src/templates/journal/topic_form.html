@@ -1,0 +1,39 @@
+{% extends "app_base.html" %}
+{% block title %}Tạo chủ đề — Learning Log{% endblock %}
+{% block breadcrumb %}Chủ đề mới{% endblock %}
+{% block content %}
+  <a class="back-link" href="{% url 'journal:topic_list' %}">
+  {% include "components/icon.html" with name="back" %} Tất cả chủ đề</a>
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">BẮT ĐẦU MỘT HÀNH TRÌNH</p>
+      <h1>Bạn muốn học điều gì?</h1>
+      <p>Đặt tên cho một góc kiến thức mới.</p>
+    </div>
+  </div>
+  <div class="editor-layout">
+    <form method="post" class="editor-panel">
+      {% csrf_token %}
+      {% include "components/form_fields.html" %}
+      <div class="form-actions">
+        <a class="button button-secondary" href="{% url 'journal:topic_list' %}">Hủy</a>
+        <button class="button">Tạo chủ đề {% include "components/icon.html" with name="arrow" %}</button>
+      </div>
+    </form>
+    <aside class="editor-aside">
+      <span class="aside-icon">{% include "components/icon.html" with name="book" %}</span>
+      <h2>Một chủ đề, nhiều khám phá.</h2>
+      <p>Bắt đầu với một tên cụ thể. Mỗi ghi chép sau này sẽ là một phần nhỏ trong chủ đề này.</p>
+      <div class="aside-example">
+        <span>GỢI Ý</span>
+        <p>
+          Lập trình Python
+          <br>
+          Thiết kế giao diện
+          <br>
+          Tiếng Anh mỗi ngày
+        </p>
+      </div>
+    </aside>
+  </div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block layout %}
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Điều hướng chính">
+      {% include "components/brand.html" %}
+      <div class="sidebar-body">
+        <p class="nav-caption">KHÔNG GIAN CỦA BẠN</p>
+        <nav class="side-nav">
+          <a href="{% url 'journal:topic_list' %}"
+             class="nav-item{% if active_nav == 'topics' %} active{% endif %}"
+             {% if active_nav == 'topics' %} aria-current="page"{% endif %}>
+          {% include "components/icon.html" with name="grid" %} Chủ đề học tập</a>
+          <a href="{% url 'journal:topic_create' %}"
+             class="nav-item{% if active_nav == 'new' %} active{% endif %}">
+          {% include "components/icon.html" with name="plus" %} Tạo chủ đề mới</a>
+        </nav>
+        <div class="sidebar-note">
+          {% include "components/icon.html" with name="spark" %}
+          <p>
+            Không cần học tất cả.
+            <br>
+            <strong>Chỉ cần hiểu thêm một chút mỗi ngày.</strong>
+          </p>
+        </div>
+      </div>
+      <div class="sidebar-account">
+        <span class="avatar">{{ user.username|first|upper }}</span>
+        <div class="account-text">
+          <strong>{{ user.username }}</strong>
+          <span>Nhật ký cá nhân</span>
+        </div>
+        <form action="{% url 'accounts:logout' %}" method="post">
+          {% csrf_token %}
+          <button class="icon-button" aria-label="Đăng xuất" title="Đăng xuất">
+            {% include "components/icon.html" with name="logout" %}
+          </button>
+        </form>
+      </div>
+    </aside>
+    <div class="app-body">
+      <header class="app-header">
+        <div class="header-left">
+          <button class="icon-button mobile-menu"
+                  type="button"
+                  data-menu
+                  aria-expanded="false"
+                  aria-controls="sidebar"
+                  aria-label="Mở điều hướng">
+            {% include "components/icon.html" with name="menu" %}
+          </button>
+          <span class="header-label">Nhật ký học tập <span>/</span> {% block breadcrumb %}Không gian của bạn{% endblock %}
+          </span>
+        </div>
+        <span class="private-label">
+        {% include "components/icon.html" with name="lock" %} Chỉ mình bạn</span>
+      </header>
+      <main id="main" class="app-main">
+        {% include "components/messages.html" %}
+        {% block content %}{% endblock %}
+      </main>
+      <footer class="app-footer">
+        <span>Mỗi ghi chép là một bước tiến.</span>
+        <span>Learning Log</span>
+      </footer>
+    </div>
+  </div>
+{% endblock %}

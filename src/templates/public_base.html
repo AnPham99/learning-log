@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block layout %}
+  <header class="public-header">
+    {% include "components/brand.html" %}
+    <nav class="public-nav" aria-label="Tài khoản">
+      <a href="{% url 'accounts:login' %}">Đăng nhập</a>
+      <a class="button button-small"
+         href="{% url 'accounts:register' %}">Bắt đầu ghi chép {% include "components/icon.html" with name="arrow" %}
+      </a>
+    </nav>
+  </header>
+  <main id="main" class="public-main">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="public-footer">
+    <span>Learning Log</span>
+    <span>Mỗi ngày, một điều mới.</span>
+  </footer>
+{% endblock %}

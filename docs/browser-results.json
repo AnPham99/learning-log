@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-10",
+  "browser": "Chromium via Playwright",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "checks": [
+    "Public landing page loads",
+    "Mobile landing: no horizontal overflow",
+    "Mobile registration: no horizontal overflow",
+    "New user has an empty dashboard",
+    "New topic has an empty journal",
+    "Editor character count updates",
+    "Editing persists after reload",
+    "Editor character count updates",
+    "User HTML is escaped",
+    "Editor character count updates",
+    "Dashboard shows three created topics",
+    "Dashboard entry count is correct",
+    "Mobile dashboard: no horizontal overflow",
+    "Hidden navigation does not accept keyboard focus",
+    "Open navigation accepts keyboard focus",
+    "Mobile navigation opens",
+    "Escape closes mobile navigation",
+    "Mobile topic detail: no horizontal overflow",
+    "Mobile editor: no horizontal overflow",
+    "Invalid form shows validation error",
+    "Logout ends authenticated navigation",
+    "Second account cannot list first account's topics",
+    "Foreign resource GET /topics/7/ returns 404",
+    "404 uses friendly page",
+    "Foreign resource GET /topics/7/entries/new/ returns 404",
+    "404 uses friendly page",
+    "Foreign resource GET /entries/7/edit/ returns 404",
+    "404 uses friendly page",
+    "Foreign write POST /topics/7/entries/new/ returns 404",
+    "Foreign write POST /entries/7/edit/ returns 404",
+    "Foreign write did not change original entry",
+    "No JavaScript runtime errors"
+  ],
+  "pageErrors": [],
+  "additionalChecks": [
+    "Database and session persisted after server restart",
+    "Newest annotated topic is first",
+    "Fresh source copy bootstrapped its own environment and database and served HTTP 200"
+  ]
+}

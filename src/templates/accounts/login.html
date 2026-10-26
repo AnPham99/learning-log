@@ -1,0 +1,16 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Đăng nhập — Learning Log{% endblock %}
+{% block auth_content %}
+  <p class="eyebrow">TIẾP TỤC HÀNH TRÌNH</p>
+  <h2>Chào bạn trở lại.</h2>
+  <p class="auth-subtitle">Những điều bạn đã học đang đợi ở đây.</p>
+  <form method="post" class="auth-form">
+    {% csrf_token %}
+    {% include "components/form_fields.html" %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="button button-full">Đăng nhập {% include "components/icon.html" with name="arrow" %}
+    </button>
+  </form>
+  <p class="auth-switch">Chưa có tài khoản? <a href="{% url 'accounts:register' %}">Tạo tài khoản</a>
+  </p>
+{% endblock %}

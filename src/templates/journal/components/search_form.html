@@ -1,0 +1,13 @@
+<form method="get" class="search-form" role="search">
+  <label for="journal-search">{{ search_label }}</label>
+  <div class="search-controls">
+    <input id="journal-search"
+           class="form-input"
+           type="search"
+           name="q"
+           value="{{ query }}"
+           placeholder="{{ search_label }}">
+    <button class="button" type="submit">Tìm kiếm</button>
+    {% if query %}<a class="button button-secondary" href="{{ request.path }}">Bỏ lọc</a>{% endif %}
+  </div>
+</form>

@@ -1,0 +1,32 @@
+[project]
+name = "learning-log"
+version = "1.0.0"
+description = "A local, private learning journal built with Django."
+requires-python = ">=3.12"
+dependencies = ["Django==6.1.2"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+
+[tool.coverage.run]
+source = ["src/accounts", "src/journal", "src/common"]
+omit = ["*/migrations/*", "*/apps.py", "*/admin.py"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.djlint]
+profile = "django"
+indent = 2
+max_line_length = 100

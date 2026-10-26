@@ -1,0 +1,29 @@
+[
+  {
+    "id": "learning-log-local",
+    "behavior": "Complete private Learning Log with local FE and BE",
+    "verification": "scripts/verify.sh and browser acceptance",
+    "state": "passing",
+    "evidence": [
+      "51 pytest tests passed; application coverage 98.73%",
+      "Ruff, template format, Django system check and migrations passed",
+      "32 Chromium checks passed; docs/browser-results.json",
+      "Restart preserved data and session; clean copy bootstrapped successfully",
+      "Handoff app served HTTP 200 on 127.0.0.1:8000; personal database has 0 users, topics, entries"
+    ],
+    "notes": "Spec: docs/SPEC.md. Local server running; no deployment or auto-commit. No existing Git repository."
+  },
+  {
+    "id": "search-delete-public-repository",
+    "behavior": "Private search, confirmed deletion, public source repository",
+    "verification": "scripts/verify.sh; Chromium desktop/mobile; GitHub API",
+    "state": "active",
+    "evidence": [
+      "57 tests passed; application coverage 98.91%",
+      "Ruff, templates, system check, migration consistency passed",
+      "Chromium verified search, empty results, clear filter, cancel and delete; mobile width 390 = scroll width 390",
+      "git check-ignore excludes database, secret key, venv and environment files"
+    ],
+    "notes": "Search/delete implemented and verified. Public repository creation and push pending."
+  }
+]
