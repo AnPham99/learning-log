@@ -38,4 +38,7 @@ Nếu mở rộng sau này, chốt phạm vi trong SPEC.md trước, viết test
   Mobile 390px không tràn ngang; kiểm tra hình sau khi sidebar hoàn tất chuyển trạng thái.
 - Test browser dùng database tạm riêng. Không xóa dữ liệu của người dùng.
 - Đã mở rộng gitignore, kiểm tra database/secret/env/venv bị loại khỏi Git.
-- Tiếp theo: commit source đã rà soát, tạo repo public, push và xác nhận remote.
+- Đã commit 0335f12 và push main; GitHub API xác nhận repo PUBLIC:
+  https://github.com/AnPham99/learning-log.
+- Đã dừng server kiểm chứng và khởi động lại app cá nhân ở cổng 8001 để tải code mới.
+- Không còn công việc trong phạm vi tính năng này; người dùng có thể refresh để dùng.
