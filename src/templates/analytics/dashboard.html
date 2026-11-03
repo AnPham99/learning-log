@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static store %}
+{% block breadcrumb %}Tổng quan kinh doanh{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/dashboard.js' %}" defer></script>
+{% endblock %}
+{% block content %}<div class="page-heading"><div><h1>Tổng quan</h1><p class="muted">Theo dõi doanh số và tồn kho của cửa hàng.</p></div><a class="button" href="{% url 'document_new' 'sale' %}">Tạo đơn bán</a></div>
+    <form method="get"
+          class="date-filter">{% include "components/fields.html" %}<button class="button secondary">Áp dụng</button></form>
+    {% if data %}<div class="dashboard-meta"><span>{{ data.start }} — {{ data.end }} · Giờ Việt Nam</span><span id="refresh-status" role="status">Cập nhật {{ data.updated_at }} · Tự làm mới mỗi 10 giây</span></div>
+    <div class="metrics">
+        <section>
+            <span>Doanh số thuần</span><strong id="metric-revenue">{{ data.revenue|vnd }} <small>₫</small></strong>
+            <p>Đơn xác nhận trừ hoàn trả trong kỳ</p>
+        </section>
+        <section>
+            <span>Lợi nhuận gộp</span><strong id="metric-profit">{{ data.profit|vnd }} <small>₫</small></strong>
+            <p>Doanh số thuần trừ giá vốn</p>
+        </section>
+        <section>
+            <span>Đơn bán hoàn tất</span><strong id="metric-orders">{{ data.orders }}</strong>
+            <p><span id="metric-returns">{{ data.returns }}</span> đơn được hoàn trong kỳ</p>
+        </section>
+        <section>
+            <span>Giá trị tồn hiện tại</span><strong id="metric-stock_value">{{ data.stock_value|vnd }} <small>₫</small></strong>
+            <p><span id="metric-stock_units">{{ data.stock_units }}</span> đơn vị trong kho</p>
+        </section>
+    </div>
+    <div class="dashboard-grid">
+        <section class="panel revenue-panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Doanh số theo ngày</h2>
+                    <p class="muted small">Đơn vị: đồng · Đã trừ hoàn trả</p>
+                </div>
+                <span class="chart-key"><i></i> Doanh số thuần</span>
+            </div>
+            <div id="revenue-chart"
+                 class="chart"
+                 role="img"
+                 aria-label="Biểu đồ doanh số thuần theo ngày"></div>
+            <div class="cash-summary"><span>Đã thu <strong id="metric-collected">{{ data.collected|vnd }} ₫</strong></span><span>Hoàn tiền <strong id="metric-refunds">{{ data.refunds|vnd }} ₫</strong></span></div>
+            <details class="chart-details">
+                <summary>Xem dữ liệu biểu đồ</summary>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ngày</th>
+                                <th class="numeric">Doanh số thuần</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daily-table">
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </section>
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Sản phẩm bán chạy</h2>
+                    <p class="muted small">Số lượng bán ròng trong kỳ</p>
+                </div>
+            </div>
+            <div id="top-products" class="ranking"></div>
+        </section>
+        <section class="panel"><div class="panel-heading"><h2>Đơn bán gần đây</h2><a class="text-link" href="{% url 'documents' 'sale' %}">Xem tất cả →</a></div><div class="table-wrap"><table><thead><tr><th>Mã đơn / Khách hàng</th><th class="numeric">Giá trị</th><th>Trạng thái</th></tr></thead><tbody id="recent-sales"></tbody></table></div></section>
+        <section class="panel"><div class="panel-heading"><h2>Cần nhập thêm <span class="badge warning" id="metric-low_count">{{ data.low_count }}</span></h2><a class="text-link" href="{% url 'stock' %}?low=1">Xem tồn kho →</a></div><p class="muted small">Sản phẩm đang bán ở mức tồn thấp.</p><div id="low-stock" class="low-stock-list"></div></section></div>
+    {{ data|json_script:"dashboard-initial" }}
+{% endif %}
+{% endblock %}

@@ -3,24 +3,23 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
-.coverage
+.coverage*
 htmlcov/
+.env*
+!.env.example
 var/*
 !var/.gitkeep
-.env
-.DS_Store
-
-# Local secrets, database copies, editor state and generated artifacts
-.env.*
-!.env.example
-*.sqlite3
-*.sqlite3-*
+*.sqlite3*
 *.db
-*.db-*
-.secret-key
 *.pem
 *.key
-.coverage.*
+.DS_Store
+
+# Credentials, backups and generated development files
+.secret-key
+.db-password
+demo-accounts*.txt
+*.dump
 coverage.xml
 *.egg-info/
 build/

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+{% block scripts %}
+    <script src="{% static 'js/document.js' %}?v=row-x-2" defer></script>
+{% endblock %}
+{% block content %}<a class="back" href="{% url 'documents' kind %}">← Danh sách chứng từ</a><div class="page-heading"><div><h1>{% if doc %}Sửa{% else %}Tạo{% endif %} {{ title|lower }}</h1><p class="muted">Lưu nháp để kiểm tra, sau đó xác nhận để cập nhật tồn kho.{% if kind == "sale" %} Giá bán lấy từ danh mục sản phẩm tại lúc lưu nháp.{% endif %}</p></div></div>
+<form method="post" class="document-form" data-kind="{{ kind }}">
+    {% csrf_token %}
+    <section class="panel">
+        <div class="form-grid">{% include "components/fields.html" %}</div>
+    </section>
+    <section class="panel"><div class="panel-heading"><h2>Sản phẩm</h2><button class="button secondary" type="button" id="add-line">Thêm dòng</button></div>{{ lines.management_form }}{{ lines.non_form_errors }}<div id="line-rows">{% for row in lines %}{% include "components/document_line.html" with form=row %}{% endfor %}</div><p class="help" id="line-empty" hidden>Chưa có sản phẩm. Thêm ít nhất một dòng để lưu chứng từ.</p><div class="line-feedback"><p class="help" id="line-status" role="status" aria-live="polite"></p><button class="button secondary" id="undo-line" type="button" hidden>Hoàn tác xóa dòng</button></div><template id="empty-line">{% include "components/document_line.html" with form=lines.empty_form %}</template></section>
+    <div class="form-actions"><a class="button secondary" href="{% url 'documents' kind %}">Hủy</a><button class="button" type="submit">Lưu nháp</button></div></form>{% endblock %}

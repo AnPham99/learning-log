@@ -1,24 +1,64 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description"
-          content="Learning Log — không gian riêng để ghi lại những điều bạn học.">
-    <meta name="application-name" content="Learning Log">
-    <title>{% block title %}Learning Log{% endblock %}</title>
-    <link rel="icon"
-          href="{% static 'images/favicon.svg' %}"
-          type="image/svg+xml">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
-    <link rel="stylesheet" href="{% static 'css/journal.css' %}">
-    <script src="{% static 'js/app.js' %}" defer></script>
-  </head>
-  <body>
-    <a class="skip-link" href="#main">Đi đến nội dung</a>
-    {% include "components/sprite.html" %}
-    {% block layout %}{% endblock %}
-  </body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+        <title>{% block title %}StoreDesk · Quản lý cửa hàng{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+        <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+        <link rel="stylesheet" href="{% static 'css/components.css' %}?v=row-x-2">
+        <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+        <link rel="stylesheet" href="{% static 'css/responsive.css' %}?v=row-x-2">
+        <script src="{% static 'js/app.js' %}" defer></script>
+        {% block scripts %}{% endblock %}
+    </head>
+    <body>
+        <a class="skip" href="#main">Đến nội dung chính</a>
+        {% if user.is_authenticated %}
+            <aside class="sidebar" id="sidebar">
+                <a class="brand" href="{% url 'home' %}">StoreDesk</a>
+                <p class="nav-label">CHỨC NĂNG</p>
+                <nav aria-label="Điều hướng chính">
+                    {% if can_manage %}<a href="{% url 'home' %}"
+   {% if nav == 'dashboard' %}aria-current="page"{% endif %}>Tổng quan</a>{% endif %}
+                    {% if can_sell %}<a href="{% url 'documents' 'sale' %}"
+   {% if nav == 'sale' %}aria-current="page"{% endif %}>Bán hàng</a>{% endif %}
+                    <a href="{% url 'products' %}"
+                       {% if nav == 'products' %}aria-current="page"{% endif %}>Sản phẩm</a>
+                    {% if can_stock %}
+                        <a href="{% url 'stock' %}"
+                           {% if nav == 'stock' %}aria-current="page"{% endif %}>Tồn kho</a>
+                        <a href="{% url 'documents' 'purchase' %}"
+                           {% if nav == 'purchase' %}aria-current="page"{% endif %}>Nhập hàng</a>
+                        <a href="{% url 'ledger' %}"
+                           {% if nav == 'ledger' %}aria-current="page"{% endif %}>Sổ kho</a>
+                    {% endif %}
+                    <p class="nav-label">ĐỐI TÁC VÀ TÀI KHOẢN</p>
+                    {% if can_sell %}<a href="{% url 'contacts' 'customer' %}"
+   {% if nav == 'customer' %}aria-current="page"{% endif %}>Khách hàng</a>{% endif %}
+                    {% if can_stock %}<a href="{% url 'contacts' 'supplier' %}"
+   {% if nav == 'supplier' %}aria-current="page"{% endif %}>Nhà cung cấp</a>{% endif %}
+                    {% if can_manage %}<a href="{% url 'staff' %}">Nhân viên</a>{% endif %}
+                </nav>
+                <div class="account"><div><strong>{{ user.first_name|default:user.username }}</strong><small>{% if can_manage %}Quản lý{% elif can_stock %}Nhân viên kho{% else %}Nhân viên bán hàng{% endif %}</small></div>
+                    <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="logout"
+        aria-label="Đăng xuất"
+        title="Đăng xuất">↪</button></form></div>
+            </aside>
+            <button class="backdrop" type="button" aria-label="Đóng menu" hidden></button>
+            <div class="workspace"><header class="topbar"><button class="menu-button"
+        aria-label="Mở menu"
+        aria-controls="sidebar"
+        aria-expanded="false">☰</button><span>Cửa hàng <span class="divider">/</span> {% block breadcrumb %}Quản lý vận hành{% endblock %}</span><span class="store-status"><i></i> Một cửa hàng · Một kho</span></header>
+                <main id="main" class="main">
+        {% else %}
+            <main id="main" class="auth-main">
+        {% endif %}
+        {% for message in messages %}<div class="notice {% if message.tags == 'error' %}notice-error{% endif %}"
+     role="status">{{ message }}</div>{% endfor %}
+        {% block content %}{% endblock %}
+    </main>{% if user.is_authenticated %}<footer>StoreDesk </footer></div>{% endif %}
+</body>
 </html>

@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-03",
+  "phase": "Re-test seeded StoreDesk and teaching documentation",
+  "checks": [
+    "manager login",
+    "dashboard seeded cards and SVG",
+    "seeded purchase draft confirms",
+    "seeded sale draft confirms",
+    "full return restores stock and audit history",
+    "nhanvien_kho login and 403 boundary",
+    "nhanvien_banhang login and 403 boundary",
+    "10-second polling preserves date filter",
+    "mobile width and keyboard menu",
+    "poll failure keeps last data and displays retry status",
+    "UI rejects insufficient stock and retains draft",
+    "product search with seeded SKU"
+  ],
+  "pageErrors": [],
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "database": "isolated copy of local demo data"
+}

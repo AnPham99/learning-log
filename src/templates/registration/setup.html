@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Thiết lập cửa hàng · StoreDesk{% endblock %}
+{% block content %}<div class="auth-brand">StoreDesk</div><section class="auth-panel"><h1>Thiết lập cửa hàng</h1><p class="muted">Tạo tài khoản quản lý đầu tiên. Sau đó bạn có thể thêm nhân viên trong phần thiết lập.</p><form method="post">{% csrf_token %}{% include "components/fields.html" %}<button class="button full">Tạo tài khoản quản lý</button></form></section>{% endblock %}

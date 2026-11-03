@@ -1,0 +1,3 @@
+{% if page.paginator.num_pages > 1 %}<nav class="pagination" aria-label="Phân trang">{% if page.has_previous %}<a class="button secondary"
+   href="{% querystring page=page.previous_page_number %}">← Trước</a>{% endif %}<span>Trang {{ page.number }} / {{ page.paginator.num_pages }} · {{ page.paginator.count }} kết quả</span>{% if page.has_next %}<a class="button secondary"
+   href="{% querystring page=page.next_page_number %}">Sau →</a>{% endif %}</nav>{% endif %}

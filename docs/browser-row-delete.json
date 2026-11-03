@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-03",
+  "feature": "Direct row deletion and UI/UX review",
+  "checks": [
+    "sale: remove middle row immediately, undo preserves values, invalid removed field does not block save, correct remaining lines and total",
+    "sale: delete persisted line while editing draft",
+    "purchase: remove middle row immediately, undo preserves values, invalid removed field does not block save, correct remaining lines and total",
+    "purchase: delete persisted line while editing draft",
+    "sale: keyboard removal, empty-state validation, 105 delete/add cycles reuse form slot",
+    "sale: desktop/mobile form layout",
+    "purchase: keyboard removal, empty-state validation, 105 delete/add cycles reuse form slot",
+    "purchase: desktop/mobile form layout",
+    "main navigation pages return 200 and have clear headings",
+    "mobile quantity/delete aligned; error banner full width",
+    "purchase validation message spans full form width"
+  ],
+  "pageErrors": [],
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ]
+}

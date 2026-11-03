@@ -1,76 +1,269 @@
-# Kiến trúc Learning Log
+# Kiến trúc StoreDesk
 
-## Quyết định
+StoreDesk là ứng dụng quản lý một cửa hàng và một kho, dùng **Django modular
+monolith**: một ứng dụng triển khai chung, bên trong chia module theo nghiệp vụ.
+Giao diện dùng **SSR**: Django tạo HTML từ template rồi gửi về trình duyệt.
+Riêng dashboard lấy thêm JSON bằng JavaScript mỗi 10 giây.
 
-Dùng **Django modular monolith** với `src/` layout và module theo chức năng.
-FE và BE cùng một tiến trình, một origin; session authentication và CSRF do Django
-quản lý. Giao diện render ở server bằng template, không cần build JavaScript.
-Python 3.12+; máy kiểm chứng dùng Python 3.14.7 và Django 6.1.2.
+Đây là MVT của Django có bổ sung service nghiệp vụ, không phải microservices hay
+Clean Architecture độc lập framework. Model/service vẫn sử dụng Django ORM.
 
-Đây là kiến trúc phù hợp cho phạm vi Learning Log, không phải khẳng định có một
-kiến trúc “mới nhất” áp dụng cho mọi ứng dụng Python.
+## 1. Sơ đồ tổng thể
 
-## Trách nhiệm và hướng phụ thuộc
-
-```text
-Browser → URL → web view → form validation
-                     ├→ selectors → Django ORM → SQLite (đọc)
-                     └→ services → selectors + model validation → SQLite (ghi)
-                 ↓
-          template + local CSS/JS → HTML response
+```mermaid
+flowchart LR
+    Browser[Trình duyệt]
+    URLs[config/urls.py]
+    Views[views.py - HTTP]
+    Forms[forms.py - kiểm tra đầu vào]
+    Services[services.py - ghi nghiệp vụ]
+    Reads[Queryset / selectors.py - đọc]
+    ORM[Django ORM]
+    DB[(PostgreSQL)]
+    Templates[templates + CSS / JS]
+    Browser --> URLs --> Views
+    Views --> Forms --> Services
+    Views --> Reads
+    Services --> ORM
+    Reads --> ORM
+    ORM --> DB
+    Views --> Templates --> Browser
 ```
 
-| Phần | Chịu trách nhiệm | Không chịu trách nhiệm |
+| Thành phần | Trách nhiệm | Ví dụ trong source |
 | --- | --- | --- |
-| `config/` | Ghép module, cấu hình framework và môi trường | Nghiệp vụ journal |
-| `models.py` | Schema, quan hệ, field constraints và metadata | HTTP, template |
-| `selectors.py` | Query đọc và giới hạn dữ liệu theo owner | Render hoặc sửa dữ liệu |
-| `services.py` | Command ghi, kiểm tra quyền, validation, transaction | HTTP hoặc HTML |
-| `forms.py` | Dữ liệu đầu vào, lỗi form, widget | Lưu database |
-| `web/` / account views | Nhận request, gọi use case, trả response | Viết query trực tiếp |
-| `templates/` | Nội dung, bố cục và component giao diện | Query hoặc nghiệp vụ |
-| `static/css/` | Token chung, layout, các trang journal | Dữ liệu |
-| `static/js/` | Menu mobile và đếm ký tự | Lưu ghi chép hoặc xác thực |
-| `scripts/` | Chuẩn bị môi trường và vòng đời server local | Nghiệp vụ app |
+| URL | Ghép đường dẫn với view | `src/config/urls.py` |
+| View | Nhận GET/POST, gọi form/service, trả HTML/JSON hoặc redirect | `src/trading/views.py` |
+| Form | Kiểm tra kiểu dữ liệu, trường bắt buộc, số lượng, giá trị nhập | `src/trading/forms.py` |
+| Service | Quy tắc ghi, kiểm tra quyền, transaction, khóa và cập nhật dữ liệu | `src/trading/services.py` |
+| Selector | Truy vấn và tổng hợp phục vụ đọc/báo cáo | `src/analytics/selectors.py` |
+| Model | Schema, quan hệ, constraints và thuộc tính dữ liệu | `src/trading/models.py` |
+| Template | Hiển thị dữ liệu, form, link và thông báo | `src/templates/trading/detail.html` |
+| Static JS | Menu, thêm dòng form, biểu đồ và refresh | `src/static/js/` |
+| Scripts | Môi trường Python và vòng đời PostgreSQL/web local | `scripts/`, `run.py` |
 
-Accounts tái sử dụng model User và bộ xác thực Django. View chỉ gọi service để tạo
-user và gọi Django login để tạo session; không tự hash mật khẩu hay xây hệ thống auth.
-Các module sử dụng trực tiếp ORM thay vì thêm repository wrapper trùng với Django.
+Không phải module nào cũng cần mọi loại file. Catalog/inventory có truy vấn danh
+sách đơn giản trong view; chỉ tách selector khi có phép tổng hợp đáng kể. Template
+không tự viết query. Service không nhận HttpRequest hoặc trả HTML.
 
-## Dữ liệu
+## 2. Các module nghiệp vụ
 
-- `User 1 → N Topic`: topic có `owner`, tên tối đa 200 ký tự, ngày tạo.
-- `Topic 1 → N Entry`: entry có nội dung, ngày tạo, thời điểm cập nhật.
-- Entry kế thừa quyền sở hữu qua Topic; không lưu owner hai lần.
-- Index `(owner, date_added)` và `(topic, date_added)` phục vụ truy vấn danh sách.
-- Dashboard annotate số entry theo Topic, tránh một query đếm riêng cho mỗi card.
-- SQLite lưu trong `var/`, không đặt trong mã nguồn. Migrations được lưu trong project.
+| Module | Sở hữu | Phụ thuộc chính |
+| --- | --- | --- |
+| `accounts` | Đăng nhập, thiết lập quản lý, tạo nhân viên, vai trò | Django User/Group |
+| `catalog` | Product và Contact, giá bán, thông tin đối tác, active flag | Quyền accounts; tạo Stock bằng 0 khi có sản phẩm |
+| `inventory` | Stock, Movement, điều chỉnh và đối chiếu sổ kho | Product, User; Movement có thể liên kết Document |
+| `trading` | Document/Line, nhập hàng, bán hàng, xác nhận và hoàn | catalog, inventory, quyền accounts |
+| `analytics` | Dashboard và kỳ báo cáo | Document/Line, Stock/Product; chỉ đọc |
+| `common` | Form style, phân trang, context menu, BusinessError | Django |
+| `config` | Settings, routes, WSGI | Ghép các module |
 
-## Quyền và validation
+`trading` quyết định giao dịch cần cộng/trừ bao nhiêu; `inventory.services.move`
+áp dụng biến động lên số dư và sổ kho. Module analytics đọc kết quả, không thực
+hiện giao dịch bán hoặc nhập. Không có một hệ thống tính tiền song song trong JS.
 
-Mọi trang dữ liệu cá nhân yêu cầu đăng nhập. Selectors tìm bằng **ID + owner**;
-không tìm ID trước rồi bỏ qua quyền. Không tồn tại và không thuộc tài khoản đều
-trở thành `JournalNotFound`, được web adapter đổi thành HTTP 404.
+## 3. Sơ đồ dữ liệu
 
-Service thêm entry kiểm tra owner của topic; service sửa entry kiểm tra owner qua
-topic. Quy tắc vẫn áp dụng khi gọi service trực tiếp, không chỉ qua UI. Form xử lý
-dữ liệu không hợp lệ; service gọi `full_clean()` trước khi ghi. Nội dung người dùng
-được template tự escape. Các POST có CSRF; đăng xuất chỉ nhận POST. Trang chi tiết
-chỉ nhận GET, vì vậy POST tới endpoint đó nhận 405.
+```mermaid
+erDiagram
+    USER ||--o{ DOCUMENT : tao_xac_nhan_hoan
+    USER ||--o{ MOVEMENT : thuc_hien
+    CONTACT o|--o{ DOCUMENT : doi_tac
+    DOCUMENT ||--|{ LINE : gom
+    PRODUCT ||--o{ LINE : duoc_giao_dich
+    PRODUCT ||--|| STOCK : so_du
+    PRODUCT ||--o{ MOVEMENT : bien_dong
+    DOCUMENT o|--o{ MOVEMENT : phat_sinh
+    PRODUCT {
+        bigint id PK
+        string sku UK
+        string name
+        decimal selling_price
+        int reorder_level
+        boolean active
+    }
+    CONTACT {
+        bigint id PK
+        string kind "supplier/customer"
+        string name
+        boolean active
+    }
+    DOCUMENT {
+        bigint id PK
+        string kind "purchase/sale"
+        string status
+        uuid request_key UK
+        decimal total
+        decimal discount
+        decimal cost
+        string payment_method
+        datetime confirmed_at
+        datetime reversed_at
+    }
+    LINE {
+        bigint document_id FK
+        bigint product_id FK
+        string product_name
+        string sku
+        int quantity
+        decimal unit_price
+        decimal cost
+    }
+    STOCK {
+        bigint product_id FK
+        int quantity
+        decimal value
+    }
+    MOVEMENT {
+        bigint product_id FK
+        bigint document_id FK "nullable"
+        int quantity "delta"
+        decimal value "delta"
+        int balance
+        bigint actor_id FK
+        string reason
+    }
+```
 
-## Chạy local
+User/Group và quan hệ nhiều-nhiều của chúng do Django Auth quản lý; sơ đồ trên chỉ
+hiển thị quan hệ User liên quan trực tiếp đến nghiệp vụ. Diagram là quan hệ nghiệp
+vụ: service yêu cầu chứng từ có ít nhất một dòng, không phải constraint số dòng ở DB.
 
-Launcher: kiểm tra cổng → chuẩn bị `.venv` → tạo dữ liệu/khóa nếu chưa có → migrate
-→ system check → server `127.0.0.1` → mở browser sau khi server sẵn sàng.
-Tắt server không reset dữ liệu. Cổng có thể đổi qua `--port`.
+- **Product**: thông tin bán hàng; category là chuỗi, chưa có bảng Category riêng.
+- **Contact**: cùng một bảng, phân loại `supplier`/`customer`; đơn khách lẻ có thể
+  không có Contact nhưng giữ tên hiển thị snapshot trên Document.
+- **Document/Line**: phần đầu và dòng hàng. Một model Document cho hai loại giao
+  dịch giúp dùng chung logic nháp, xác nhận và hoàn, nhưng vẫn kiểm tra quyền theo loại.
+- **Stock**: số dư hiện tại, mỗi sản phẩm một bản ghi. Phạm vi chỉ có một kho
+  nên chưa có bảng Warehouse hoặc chiều warehouse_id.
+- **Movement**: thay đổi có dấu và số dư sau thao tác. Điều chỉnh kho không cần Document.
 
-`config/settings/base.py` chứa cấu hình chung; `local.py` dùng SQLite và loopback;
-`test.py` dùng khóa/hasher dành riêng cho kiểm thử. Biến `LEARNING_LOG_DATA_DIR`
-cho phép chạy browser acceptance trên database riêng mà không làm bẩn dữ liệu thật.
+Không có bảng Payment riêng: payment_method nằm trong Document; xác nhận đơn bán
+nghĩa là nhân viên đã thu đầy đủ bằng phương thức được chọn. Không tích hợp ngân hàng.
 
-## Phạm vi mở rộng
+Product/Contact đã dùng được ngừng hoạt động bằng active flag. Các FK quan trọng
+sử dụng PROTECT để không mất lịch sử. Line lưu tên/SKU/giá bán khi lưu nháp; giá vốn
+chụp khi xác nhận. Chỉnh danh mục sau đó không sửa lại giao dịch cũ.
 
-Thêm chức năng journal trong cùng module, viết test trước rồi nối form/view/template.
-Chỉ tách backend API hoặc frontend riêng khi có yêu cầu cụ thể. Tìm kiếm dùng selectors với điều kiện owner; xóa dùng services có transaction và
-kiểm tra owner. GET hiển thị xác nhận; POST có CSRF thực hiện xóa. Hiện chưa có
-public topics hoặc upload.
+## 4. Luồng xác nhận bán hàng
+
+```mermaid
+sequenceDiagram
+    actor Staff as Nhân viên
+    participant View as trading.views
+    participant Service as trading.services
+    participant StockService as inventory.services
+    participant DB as PostgreSQL
+    Staff->>View: POST action=confirm + CSRF
+    View->>Service: confirm_document(actor, document_id)
+    Service->>DB: BEGIN + khóa Document
+    Service->>Service: Kiểm tra vai trò và trạng thái
+    Service->>DB: Khóa Stock theo product_id tăng dần
+    Service->>Service: Kiểm tra tồn, tính giá vốn
+    Service->>StockService: move(delta âm, giá trị âm)
+    StockService->>DB: UPDATE Stock + INSERT Movement
+    Service->>DB: UPDATE Line.cost + Document confirmed
+    alt Mọi dòng hợp lệ
+        Service->>DB: COMMIT
+        View-->>Staff: Redirect + thông báo thành công
+    else Một dòng thiếu tồn hoặc lỗi
+        Service->>DB: ROLLBACK toàn bộ
+        View-->>Staff: Thông báo lỗi, chứng từ vẫn nháp
+    end
+```
+
+Luồng nhập tương tự nhưng cộng số lượng và giá trị theo giá nhập. Hoàn bán cộng
+lại chính giá vốn gốc; hoàn nhập chỉ được phép nếu chưa có biến động tiếp theo.
+
+## 5. Vòng đời chứng từ
+
+```mermaid
+stateDiagram-v2
+    [*] --> draft: Lưu nháp
+    draft --> confirmed: Xác nhận thành công
+    draft --> cancelled: Hủy nháp có lý do
+    confirmed --> reversed: Quản lý hoàn toàn bộ
+    cancelled --> [*]
+    reversed --> [*]
+```
+
+- Nháp/hủy nháp không làm thay đổi tồn.
+- Chứng từ đã xác nhận không sửa dòng hàng. Hoàn là thao tác đảo có lưu actor/lý do/ngày.
+- Lặp xác nhận trên confirmed trả lại kết quả hiện có, không cộng/trừ lần hai.
+- Hoàn lặp trên reversed không tạo thêm biến động.
+
+## 6. Toàn vẹn và đồng thời
+
+`transaction.atomic` bao toàn bộ thao tác. `select_for_update` khóa chứng từ và các
+số dư liên quan cho đến commit/rollback. Khóa sản phẩm theo thứ tự nhất quán để
+tránh tình huống các đơn giữ khóa theo thứ tự trái nhau. Hai đơn cùng mua lượng
+hàng cuối sẽ kiểm tra tồn lần lượt; đơn đến sau bị từ chối nếu không còn đủ hàng.
+
+Token UUID và advisory lock bảo vệ double-submit khi lưu nháp. UniqueConstraint
+ngăn một sản phẩm xuất hiện hai dòng trong cùng chứng từ. CheckConstraint bảo vệ
+giá/số lượng hợp lệ; quyền vẫn kiểm tra lại ở service ngay cả khi đã bảo vệ view.
+
+Giá vốn bình quân = tổng giá trị tồn / số lượng tồn. Nếu xuất hết thì lấy toàn bộ
+giá trị tồn, không để lại số dư do làm tròn. Nội bộ giữ 4 số thập phân; UI làm tròn VND.
+
+`inventory.checks` và `manage.py check_business_data` đối chiếu sổ kho, giá trị, tổng
+tiền và tác động chứng từ. Lệnh chỉ đọc, không “tự sửa” dữ liệu. Báo cáo kiểm tra dùng
+snapshot để không lấy các nửa trạng thái khác nhau khi có giao dịch đồng thời.
+
+## 7. Dashboard và “thời gian thực”
+
+```mermaid
+flowchart LR
+    HTML[Trang SSR ban đầu] --> JS[dashboard.js]
+    JS -->|GET mỗi 10 giây + start/end| API[analytics.views.dashboard_data]
+    API --> Read[analytics.selectors.dashboard]
+    Read --> DB[(PostgreSQL snapshot)]
+    DB --> Read --> JSON[JSON số liệu]
+    JSON --> JS --> Render[Thẻ, SVG, bảng dữ liệu]
+```
+
+- Doanh số thuần = tổng đơn bán xác nhận trong kỳ − hoàn trả ghi nhận trong kỳ.
+- Tiền đã thu/hoàn tiền hiển thị riêng; lợi nhuận gộp trừ giá vốn, chưa trừ chi phí vận hành.
+- Hoàn hôm nay không sửa doanh số ngày bán cũ; có thể có doanh số âm ngày hoàn.
+- Tồn kho là số dư hiện tại, không phải tồn lịch sử cuối kỳ.
+- Polling 10 giây, timeout 8 giây, không request chồng; tab ẩn tạm ngưng.
+- Khi lỗi mạng giữ dữ liệu cũ và báo chưa cập nhật. Không phải WebSocket/SSE tức thì.
+- Bộ lọc tối đa 366 ngày theo giờ Việt Nam; biểu đồ SVG có bảng số liệu để kiểm tra.
+
+## 8. Đọc source và kiểm chứng
+
+Đọc theo thứ tự: `config/urls.py` → `trading/views.py` → `trading/forms.py` →
+`trading/services.py` → `inventory/services.py` → các models → `analytics/selectors.py`
+→ `static/js/dashboard.js`. Mỗi module chính có docstring mô tả nhiệm vụ ngay đầu file.
+
+| Điều cần chứng minh | Source | Test / lệnh |
+| --- | --- | --- |
+| Quyền vai trò | `accounts/permissions.py` | `tests/test_web.py`, `tests/test_transactions.py` |
+| Snapshot giá | `trading/services.py: save_draft` | `test_price_snapshot_and_draft_idempotency` |
+| Không bán quá tồn | `trading/services.py: confirm_document` | `test_concurrent_sales_cannot_oversell` |
+| Không xác nhận hai lần | Cùng service + khóa Document | `test_concurrent_confirm_only_once` |
+| Không tạo nháp trùng | `save_draft` + request_key | `test_concurrent_draft_request_only_once` |
+| Hoàn trả và giá vốn | `reverse_document`, `inventory/services.py` | `tests/test_transactions.py` |
+| Doanh số đúng ngày | `analytics/selectors.py` | `tests/test_dashboard.py` |
+| Seed không chạy trùng | `catalog/management/commands/seed_demo.py` | `tests/test_seed_and_audit.py` |
+| Số dư khớp sổ | `inventory/checks.py` | `manage.py check_business_data` |
+
+Tài liệu liên quan: [Kịch bản trình bày](PRESENTATION.md), [kết quả kiểm chứng](VERIFICATION.md),
+[dữ liệu kiểm tra hiện tại](data-check.json), [phạm vi](SCOPE.md).
+
+Tham khảo khóa dòng Django đã đối chiếu:
+https://github.com/django/django/blob/6.1/docs/ref/models/querysets.md
+
+## 9. Thao tác dòng hàng trong form
+
+`static/js/document.js` phụ trách thêm/xóa/hoàn tác dòng, không ghi database hoặc
+tự tính giá giao dịch. Nút Xóa dòng ẩn ngay dòng đang thao tác, đánh dấu DELETE và
+disable input của dòng đó để validation trình duyệt không cản lưu. Formset vẫn giữ
+index và TOTAL_FORMS; view bỏ qua dòng DELETE trước khi gọi service. Dòng được
+thêm lại dùng slot đã xóa, nên thao tác lặp không làm hết giới hạn formset.
+
+Có Hoàn tác cho lần xóa gần nhất trước khi lưu, giữ nguyên dữ liệu đã nhập. Khi
+xóa hết có trạng thái trống và server từ chối lưu chứng từ không có sản phẩm.
+DELETE là trường ẩn; nút × được render sẵn trong component document_line.html.
+JS xử lý thao tác xóa/hoàn tác. Không có checkbox Bỏ dòng trên UI.
+Regression HTTP ở tests/test_document_rows.py bao gồm cả tạo mới/sửa nháp, nhập/bán.
