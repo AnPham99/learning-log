@@ -24,7 +24,8 @@ Current local database has 3 demo users, 8 products and 32 documents; see update
 
 Acceptance/restore test databases removed, acceptance web stopped; personal web
 and dedicated PostgreSQL left running. Runtime secrets/DB ignored by .gitignore.
-No new Git repository, commit, push or deployment performed for this project.
+Subsequently published StoreDesk to the existing public AnPham99/learning-log repository
+with explicit user authorization; no cloud deployment. See publication section below.
 
 ## Remaining / limits
 
@@ -107,4 +108,7 @@ User explicitly authorized overriding AnPham99/learning-log with StoreDesk.
 - README made portable; gitignore protects runtime, demo credentials and backups.
 - Attach current StoreDesk directory to existing remote history, stage replacement tree,
   audit files, commit and normal push. Keep old commits; no force-push.
-- Current step: preparing replacement commit and publication.
+- Published replacement commit 0d58a55 to origin/main by normal push.
+- GitHub API confirmed visibility PUBLIC and README blob matching StoreDesk.
+- StoreDesk directory is now the active checkout for this existing remote.
+- Old Learning Log commits remain in history; runtime databases/secrets excluded.

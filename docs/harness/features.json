@@ -14,7 +14,7 @@
       "Requested demo provisioning: all 3 logins and roles verified; stock/ledger mismatch count 0.",
       "Seed re-test: 12 Chromium groups on isolated copy; main data audit ok, docs/data-check.json and docs/browser-retest.json."
     ],
-    "notes": "Source: docs/SCOPE.md and chat approval. Separate project; no new GitHub/deployment authorization. Test DB isolated and removed. User subsequently requested demo provisioning: 3 accounts, 8 products and 32 documents; passwords only in ignored var/demo-accounts.txt."
+    "notes": "Source: docs/SCOPE.md and chat approval. Published with explicit authorization to existing public AnPham99/learning-log; local runtime excluded. Test DB isolated and removed. User subsequently requested demo provisioning: 3 accounts, 8 products and 32 documents; passwords only in ignored var/demo-accounts.txt."
   },
   {
     "id": "teaching-documentation-and-seed-retest",
@@ -42,5 +42,18 @@
       "User correction: hidden DELETE field + SSR × control; live purchase/sale/mobile checks pass; 60 tests passed."
     ],
     "notes": "User request in chat. Django formset protocol preserved; no schema change, Git publishing or main data reset."
+  },
+  {
+    "id": "replace-learning-log-repository",
+    "behavior": "Replace existing public AnPham99/learning-log contents with StoreDesk, preserving Git history",
+    "verification": "scripts/verify.sh; staged file/credential audit; git push; GitHub API visibility and README SHA; remote HEAD comparison",
+    "state": "passing",
+    "evidence": [
+      "60 tests passed; lint/format/check/migrations passed",
+      "123 staged source/doc files audited; runtime, demo credentials and environment excluded",
+      "Normal push 6c764f1..0d58a55 to main succeeded",
+      "GitHub API visibility PUBLIC; README blob 45ee9be6b77076b8d63d777c11c554b65b697a97"
+    ],
+    "notes": "User explicitly requested overriding the existing repo. No force push; old source recoverable from history."
   }
 ]
