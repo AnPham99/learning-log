@@ -1,5 +1,3 @@
-"""Stock lưu số dư hiện tại; Movement lưu từng lần thay đổi và người thực hiện."""
-
 from django.conf import settings
 from django.db import models
 from django.db.models import Q

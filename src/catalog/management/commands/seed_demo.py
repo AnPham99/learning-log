@@ -1,5 +1,3 @@
-"""Optional, explicit sample data; never run automatically on a user's database."""
-
 import uuid
 from datetime import timedelta
 from decimal import Decimal

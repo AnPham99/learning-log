@@ -1,5 +1,3 @@
-"""Chứng từ nhập/bán và dòng hàng; giữ trạng thái, snapshot giá và dấu vết thao tác."""
-
 import uuid
 
 from django.conf import settings

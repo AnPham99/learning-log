@@ -1,5 +1,3 @@
-"""Danh sách và form sản phẩm/đối tác; query đọc đơn giản, ghi qua service."""
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q

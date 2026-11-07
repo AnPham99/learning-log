@@ -1,5 +1,3 @@
-"""Chỉ đọc: tổng hợp doanh số, hoàn trả, giá vốn và tồn cho dashboard."""
-
 from collections import defaultdict
 from datetime import datetime, time, timedelta
 from decimal import Decimal
@@ -24,7 +22,6 @@ def date_bounds(start, end):
 
 
 def dashboard(*, actor, start, end):
-    """Kiểm tra quyền, lấy một snapshot nhất quán cho toàn bộ thẻ và biểu đồ."""
     require_role(actor, "manager")
     from django.db import connection
 
@@ -37,7 +34,6 @@ def dashboard(*, actor, start, end):
 
 
 def _snapshot(start, end):
-    # One consistent snapshot across cards and charts while sales are being confirmed.
     lower, upper = date_bounds(start, end)
     base = Document.objects.filter(kind="sale", status__in=["confirmed", "reversed"])
     sold = base.filter(confirmed_at__gte=lower, confirmed_at__lt=upper)
@@ -110,7 +106,7 @@ def _snapshot(start, end):
                 "total": int(d.total),
                 "status": d.get_status_display(),
             }
-            for d in sold.select_related("contact").order_by("-confirmed_at", "-pk")[:6]
+            for d in sold.order_by("-confirmed_at", "-pk")[:6]
         ],
         "updated_at": timezone.localtime().strftime("%H:%M:%S"),
         "start": start.isoformat(),

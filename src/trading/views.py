@@ -1,5 +1,3 @@
-"""Adapter HTTP: đọc form, gọi trading service, hiển thị kết quả và chuyển trang."""
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
@@ -23,7 +21,11 @@ def document_list(request, kind):
         raise Http404
     authorize(request.user, kind)
     query = search_term(request)
-    rows = Document.objects.filter(kind=kind).select_related("contact", "created_by")
+    rows = (
+        Document.objects.filter(kind=kind)
+        .select_related("created_by")
+        .prefetch_related("created_by__groups")
+    )
     if query:
         condition = Q(contact_name__icontains=query) | Q(note__icontains=query)
         numeric = query.removeprefix("PN-").removeprefix("BH-")
@@ -142,7 +144,7 @@ def document_edit(request, kind, pk=None):
 @require_http_methods(["GET", "POST"])
 def document_detail(request, pk):
     doc = get_object_or_404(
-        Document.objects.select_related("contact", "created_by").prefetch_related("lines"), pk=pk
+        Document.objects.select_related("created_by").prefetch_related("lines"), pk=pk
     )
     authorize(request.user, doc.kind)
     form = ReversalForm(request.POST if request.method == "POST" else None)

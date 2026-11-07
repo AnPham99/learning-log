@@ -1,5 +1,3 @@
-"""Khoảng ngày cho dashboard: giờ Việt Nam, đúng thứ tự và tối đa 366 ngày."""
-
 from datetime import timedelta
 
 from django import forms

@@ -1,5 +1,3 @@
-"""Bản đồ URL của StoreDesk: nối màn hình với view của từng nghiệp vụ."""
-
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 

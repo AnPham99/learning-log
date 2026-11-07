@@ -1,5 +1,3 @@
-"""Kiểm tra dữ liệu minh họa và bộ đối chiếu độc lập với UI."""
-
 import io
 
 import pytest

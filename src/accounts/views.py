@@ -1,5 +1,3 @@
-"""HTTP cho thiết lập, đăng nhập và nhân viên; gọi service để tạo tài khoản."""
-
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.views import LoginView

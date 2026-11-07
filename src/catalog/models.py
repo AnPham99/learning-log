@@ -1,5 +1,3 @@
-"""Danh mục thương mại: Product và Contact (khách hàng/nhà cung cấp)."""
-
 from django.db import models
 from django.db.models import Q
 

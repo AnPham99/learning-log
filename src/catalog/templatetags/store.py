@@ -6,6 +6,17 @@ register = template.Library()
 
 
 @register.filter
+def staff_role(user):
+    if user.is_superuser:
+        return "Quản lý"
+    labels = {"manager": "Quản lý", "warehouse": "Nhân viên kho", "sales": "Bán hàng"}
+    return (
+        " / ".join(labels[group.name] for group in user.groups.all() if group.name in labels)
+        or "Nhân viên"
+    )
+
+
+@register.filter
 def vnd(value):
     if value is None:
         return "0"

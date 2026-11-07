@@ -1,5 +1,3 @@
-"""Validation và widget cho thông tin sản phẩm/đối tác; không tự lưu dữ liệu."""
-
 from django import forms
 
 from common.forms import StyledFormMixin

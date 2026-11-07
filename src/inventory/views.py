@@ -1,5 +1,3 @@
-"""Màn hình tồn, lịch sử kho và điều chỉnh; không chứa công thức giá vốn."""
-
 from django.contrib import messages
 from django.db.models import F, Q
 from django.shortcuts import redirect, render

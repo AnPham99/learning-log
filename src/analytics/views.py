@@ -1,5 +1,3 @@
-"""Trang SSR tổng quan và JSON endpoint để dashboard tự lấy dữ liệu mỗi 10 giây."""
-
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.shortcuts import redirect, render

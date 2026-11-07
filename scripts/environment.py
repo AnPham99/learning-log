@@ -14,9 +14,17 @@ def prepare(root):
             descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             with os.fdopen(descriptor, "w") as output:
                 output.write(secrets.token_urlsafe(48))
-    python = root / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    candidates = [
+        root / ".venv" / "Scripts" / "python.exe",
+        root / ".venv" / "bin" / "python.exe",
+        root / ".venv" / "bin" / "python",
+    ]
+    python = next((path for path in candidates if path.exists()), candidates[0])
     if not python.exists():
         subprocess.run([sys.executable, "-m", "venv", str(root / ".venv")], check=True)
+        python = next((path for path in candidates if path.exists()), candidates[0])
+    if not python.exists():
+        raise RuntimeError("Không tìm thấy Python trong môi trường .venv.")
     probe = subprocess.run([str(python), "-c", "import django, psycopg"], capture_output=True)
     if probe.returncode:
         subprocess.run(

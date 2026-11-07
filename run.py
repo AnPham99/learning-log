@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Start StoreDesk locally; no credentials stored in source."""
 
 import argparse
 import os
@@ -29,6 +28,9 @@ def open_when_ready(url):
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description="StoreDesk — kho và bán hàng local")
     parser.add_argument("--port", type=int, default=8010)
     parser.add_argument("--no-browser", action="store_true")
@@ -48,7 +50,11 @@ def main():
                 ) from error
     python, data = prepare(ROOT)
     if Path(sys.prefix).resolve() != (ROOT / ".venv").resolve():
-        os.execv(str(python), [str(python), str(ROOT / "run.py"), *sys.argv[1:]])
+        try:
+            result = subprocess.run([str(python), str(ROOT / "run.py"), *sys.argv[1:]])
+        except KeyboardInterrupt:
+            return
+        sys.exit(result.returncode)
     from scripts.database import start_database, stop_database
 
     if args.stop_db:

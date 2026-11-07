@@ -1,5 +1,3 @@
-"""Ghi sản phẩm/đối tác có kiểm tra quyền; sản phẩm mới có Stock ban đầu bằng 0."""
-
 from django.db import transaction
 
 from accounts.permissions import require_role

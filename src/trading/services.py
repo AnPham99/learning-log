@@ -1,5 +1,3 @@
-"""Nghiệp vụ nhập/bán: lưu nháp, xác nhận, hủy/hoàn có quyền, khóa và transaction."""
-
 from decimal import Decimal
 
 from django.db import connection, transaction
@@ -63,9 +61,7 @@ def save_draft(
     note="",
     document_id=None,
 ):
-    """Lưu chứng từ nháp, chụp tên/giá bán; cùng token chỉ tạo một lần."""
     authorize(actor, kind)
-    # Serialize retries with the same form token, including requests on separate connections.
     with connection.cursor() as cursor:
         cursor.execute("SELECT pg_advisory_xact_lock(%s)", [request_key.int & ((1 << 63) - 1)])
     existing = Document.objects.filter(request_key=request_key).first()
@@ -108,7 +104,6 @@ def save_draft(
 
 @transaction.atomic
 def confirm_document(*, actor, document_id):
-    """Khóa chứng từ và tồn; ghi mọi dòng hoặc rollback toàn bộ nếu thiếu hàng."""
     doc = Document.objects.select_for_update().get(pk=document_id)
     authorize(actor, doc.kind)
     if doc.status == "confirmed":
@@ -168,10 +163,10 @@ def confirm_document(*, actor, document_id):
 
 @transaction.atomic
 def reverse_document(*, actor, document_id, reason):
-    """Hủy nháp hoặc hoàn toàn bộ; giữ lịch sử, chỉ đảo tồn một lần."""
+    reason = reason.strip()
     doc = Document.objects.select_for_update().get(pk=document_id)
     authorize(actor, doc.kind)
-    if not reason.strip() or len(reason.strip()) > 250:
+    if not reason or len(reason) > 250:
         raise BusinessError("Cần lý do hủy/hoàn (tối đa 250 ký tự).")
     if doc.status in ["cancelled", "reversed"]:
         return doc
@@ -202,11 +197,11 @@ def reverse_document(*, actor, document_id, reason):
                 quantity=quantity,
                 value=value,
                 actor=actor,
-                reason=reason.strip(),
+                reason=reason,
                 document=doc,
             )
         doc.status = "reversed"
-    doc.reversed_at, doc.reversal_reason = timezone.now(), reason.strip()
+    doc.reversed_at, doc.reversal_reason = timezone.now(), reason
     doc.reversed_by = actor
     doc.save(update_fields=["status", "reversed_at", "reversal_reason", "reversed_by"])
     return doc

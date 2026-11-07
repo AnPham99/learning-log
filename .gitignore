@@ -26,3 +26,6 @@ build/
 dist/
 .idea/
 .vscode/
+
+# Temporary Microsoft Office lock files
+~$*

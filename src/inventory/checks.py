@@ -1,9 +1,3 @@
-"""Đối chiếu dữ liệu nghiệp vụ; chỉ đọc, không tự sửa database.
-
-Dùng khi kiểm tra seed hoặc trước buổi demo. Stock phải khớp tổng Movement;
-chứng từ phải khớp dòng hàng và tác động kho theo trạng thái.
-"""
-
 from collections import defaultdict
 from decimal import Decimal
 
@@ -55,7 +49,6 @@ def _check_documents(effects, errors):
 
 
 def check_business_data():
-    """Lấy snapshot chỉ đọc, không báo lệch giả khi có giao dịch đồng thời."""
     nested = connection.in_atomic_block
     with transaction.atomic():
         if not nested:
@@ -65,7 +58,6 @@ def check_business_data():
 
 
 def _check_snapshot():
-    """Trả số lượng và lỗi đối chiếu để CLI/tests cùng sử dụng."""
     errors = []
     totals, effects = _ledger_totals(errors)
     if Product.objects.filter(stock__isnull=True).exists():

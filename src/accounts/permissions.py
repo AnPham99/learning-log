@@ -1,5 +1,3 @@
-"""Quyền theo vai trò. Decorator bảo vệ HTTP; require_role bảo vệ service."""
-
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required

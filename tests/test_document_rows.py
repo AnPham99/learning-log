@@ -1,5 +1,3 @@
-"""Regression: dòng đánh dấu DELETE không được lưu hoặc cản validation."""
-
 import uuid
 
 import pytest

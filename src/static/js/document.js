@@ -1,4 +1,3 @@
-// Thêm, xóa và hoàn tác dòng hàng; giữ index/DELETE đúng chuẩn Django formset.
 (() => {
   const form = document.querySelector('.document-form');
   if (!form) return;
@@ -25,7 +24,6 @@
   }
 
   function markRemoved(row, removed) {
-    // Keep Django's form indices and DELETE token; ignore invalid inputs in removed rows.
     const checkbox = deletionInput(row);
     checkbox.value = removed ? 'True' : '';
     row.hidden = removed;
@@ -68,7 +66,6 @@
 
   addButton.addEventListener('click', () => {
     if (activeRows().length >= 100) return;
-    // Reuse a deleted slot so repeated add/remove does not exhaust TOTAL_FORMS.
     const reusable = [...rows.querySelectorAll('.line-row')].find(row => row.hidden);
     const index = reusable ? deletionInput(reusable).name.match(/-(\d+)-DELETE$/)[1] : count.value;
     const template = document.createElement('template');

@@ -1,5 +1,3 @@
-"""Phân trang và chuẩn hóa từ khóa dùng chung cho các danh sách."""
-
 from django.core.paginator import Paginator
 
 

@@ -1,5 +1,3 @@
-"""CLI kiểm tra dữ liệu kho/chứng từ, không ghi hoặc xóa dữ liệu."""
-
 import json
 
 from django.core.management.base import BaseCommand, CommandError

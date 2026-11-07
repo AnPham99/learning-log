@@ -1,5 +1,3 @@
-"""Kiểm tra phần đầu chứng từ và formset dòng hàng; chưa làm thay đổi tồn."""
-
 import uuid
 
 from django import forms

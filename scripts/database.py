@@ -1,5 +1,3 @@
-"""Manage only this project's isolated local PostgreSQL cluster."""
-
 import os
 import shutil
 import subprocess
@@ -7,11 +5,24 @@ from pathlib import Path
 
 
 def postgres_bin():
+    candidates = []
     if command := shutil.which("pg_config"):
-        return Path(subprocess.check_output([command, "--bindir"], text=True).strip())
+        candidates.append(Path(subprocess.check_output([command, "--bindir"], text=True).strip()))
+    candidates.extend(
+        Path(p)
+        for p in [
+            r"C:\Program Files\PostgreSQL\17\bin",
+            r"C:\Program Files\PostgreSQL\16\bin",
+            r"C:\Program Files\PostgreSQL\15\bin",
+        ]
+    )
+    for binary in candidates:
+        suffix = ".exe" if os.name == "nt" else ""
+        if (binary / f"initdb{suffix}").exists() and (binary / f"pg_ctl{suffix}").exists():
+            return binary
     raise RuntimeError(
-        "Cần PostgreSQL 15+. macOS: brew install postgresql@15. "
-        "Hoặc dùng PostgreSQL ngoài qua PGHOST/PGPASSWORD."
+        "Chưa tìm thấy PostgreSQL Server (cần initdb.exe và pg_ctl.exe). "
+        "Hãy cài PostgreSQL 15+ hoặc cấu hình PGHOST cho PostgreSQL bên ngoài."
     )
 
 

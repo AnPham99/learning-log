@@ -1,5 +1,3 @@
-"""Tạo quản lý đầu tiên và nhân viên qua Django Auth; không xử lý HTTP."""
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import connection, transaction
